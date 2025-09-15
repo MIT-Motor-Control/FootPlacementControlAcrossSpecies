@@ -2,7 +2,8 @@
 data_input = load('jointsCON.mat').jointsCON;
 disp("Data loaded");
 
-% There are two functionning versions for this script. The first one evaluates the non mutants group (it corresponds to the uncommented current version of the file), the second one evaluates the mutant groups (it corresponds to the commented version of this file). To go from one to the other, all you have to do is to change which parts of the code are commmented.
+% There are two functionning versions for this script. The first one evaluates the non mutants group (it corresponds to the uncommented current version of the file),
+% the second one evaluates the mutant groups (it corresponds to the commented version of this file). To go from one to the other, all you have to do is to change which parts of the code are commmented.
 
 n_group =  2;%size(data_input,2);
 
