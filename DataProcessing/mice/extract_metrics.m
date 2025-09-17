@@ -2,11 +2,11 @@ function [output_metrics_] = extract_metrics(input_data, idx_begin, idx_end,anim
 % EXTRACT_METRICS : extracts all the step-to-step contacts and their associated metrics
 %
 % INPUTS 
-% - input_data
-% - idx_begin
-% - idx_end
-% - animal
-% - tmp_vel
+% - input_data : input foot placement data
+% - idx_begin : initial time stamp of the current input data
+% - idx_end : final time stamp of the current input data
+% - animal : animal identity
+% - tmp_vel : average velocity of the current locomotion bout
 %
 % OUTPUTS
 % - output_metrics_ : Nx8 matrix containing all the contact information as follows (per column)
