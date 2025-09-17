@@ -1,4 +1,4 @@
-function [position_matrix, foot_placement, head_velocity] = extract_foot_placement(time_vector, x_position, y_position, body_xposition, head_marker)
+function [position_matrix] = extract_foot_placement(time_vector, x_position, y_position, body_xposition, head_marker)
 % EXTRACT_FOOT_PLACEMENT constructs the foot placement mask for the raw data based on the distance detection method
 %
 % INPUTS
@@ -10,8 +10,6 @@ function [position_matrix, foot_placement, head_velocity] = extract_foot_placeme
 %
 % OUTPUTS
 % - position_matrix : Matrix containing the foot placement location in the entries corresponding to the time in stance phase.
-% - foot_placement : LEGACY output - has to be discarded
-% - head_velocity : LEGACY output - has to be discarded
 %
 % @Antoine De Comite - MIT 2025
 
