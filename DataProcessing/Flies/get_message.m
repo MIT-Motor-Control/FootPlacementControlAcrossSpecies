@@ -8,7 +8,8 @@ function output_message = get_message(padded_list, com_vel, idx_input)
 %
 % OUTPUTS
 % - output_message : is 1 if the animal stops and rotates, 2 if the animal stops, 3 if the animal rotate, 4 if the data is useable
-
+%
+% @Antoine De Comite - MIT 2025
 idx_nan = find(isnan(padded_list(:,1)));
 idx_begin = idx_nan(idx_input); idx_end = idx_nan(idx_input+1);
 angle_vec = padded_list(idx_begin:idx_end,4);
@@ -26,3 +27,4 @@ else
     output_message = 4;
 
 end
+
