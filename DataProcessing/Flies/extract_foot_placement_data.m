@@ -1,5 +1,17 @@
 function position_matrix = extract_foot_placement_data(x_position, y_position, local_time, idx_leg, input_data)
-% Extract the position information from the raw dataset
+%EXTRACT_FOOT_PLACEMENT_DATA computes the location and timing of the foot contact for the fly dataset
+%
+% INPUTS 
+% - x_position: x-location of the input data as a function of time 
+% - y_position: y-location of the input data as a function of time
+% - local_time: temporal time mask for the current data to be investigated
+% - idx_leg : identifies the leg to be worked with
+% - input_data: raw data 
+%
+% OUTPUTS
+% - position_data : contains the foot placement location matrix - the value is 0 when the foot is in its swing phase and the contact location when it is in its stance phase 
+%
+% @Antoine De Comite - MIT 2025
 
 switch idx_leg
     case 1
@@ -37,3 +49,4 @@ for ii = 1 : length(idx_start_st)
     end
 end
 end
+
