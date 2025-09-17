@@ -1,4 +1,4 @@
-# The goal fo this code is to generate the inputs for the controller inference in fly
+# This script transforms the preprocessed fly dataset into a format that is useable for the foot placement controller inference 
 
 import os, sys
 import copy
@@ -18,16 +18,13 @@ bool_save_io = True
 foot_data = spio.loadmat(os.path.join(INPUTS_FOLDER, 'contact_data_mm_fixed.mat'))['padded_contacts_data']
 raw_data = spio.loadmat(os.path.join(INPUTS_FOLDER, 'raw_pos_mm.mat'))['reconstructed_padded_matrix']
 validity = spio.loadmat(os.path.join(INPUTS_FOLDER, 'validity_mm.mat'))['vec_message']
-print(foot_data.shape)
-print(raw_data.shape)
-sys.exit()
 n_good_chunks = len(np.where(validity==4)[0])
 n_good_chunks = len(np.where(validity==4)[0])
 tot_animal_vector = raw_data[:,2]-1
 id_animals = list(set(tot_animal_vector))
 idx_nan = np.where(np.isnan(foot_data[:,0,0]))[0]
 
-# Compute the list for all the correct chunks
+# We only investigated those locomotion bouts for which the animal was neither turning nor stopping =
 list_output_chunks = []
 
 for chunks in tqdm(range(len(idx_nan)-1)):
@@ -37,34 +34,27 @@ for chunks in tqdm(range(len(idx_nan)-1)):
     else:
         tmp_mat = extract_metrics_threshold(foot_data, chunks, raw_data)
         list_output_chunks.append(tmp_mat)
-print(len(list_output_chunks),'length after loop')
+
 
 with open(os.path.join(OUTPUTS_FOLDER,'list_outputs_animals_threshold_mm.pkl'),'wb') as f1:
     pickle.dump(list_output_chunks, f1)
-"""
-with open(os.path.join(OUTPUTS_FOLDER,'list_outputs_animals_threshold.pkl'),'rb') as f1:
-    list_output_chunks = pickle.load(f1)
-"""
+
 print(len(list_output_chunks))
+
 # Generate the input/output for the controller inference
 video_id_list = get_video_id_chunk(raw_data[:,2], validity)
 fly_id_list = get_fly_id_chunk(raw_data[:,1], validity)
 raw_data = reshape_raw_data(raw_data)
 foot_data = reshape_foot_data(foot_data)
-#tot_input_fr, tot_output_fr = get_input_output_fr(raw_data, foot_data, list_output_chunks, validity)
-# idx_nans = np.where(np.isnan())
+
 
 tot_input_fr, tot_output_fr, avg_velocity = get_input_output_fr_vel(raw_data, foot_data, list_output_chunks, validity)
-print(len(tot_input_fr))
-print(len(tot_output_fr))
-print(len(avg_velocity))
-#tot_input_fl, tot_output_fl = get_input_output_fl(raw_data, foot_data, list_output_chunks, validity)
-#tot_input_self_fr, tot_output_self_fr = get_input_output_self_fr(raw_data, foot_data, list_output_chunks, validity)
-#tot_input_self_fl, tot_output_self_fl = get_input_output_self_fl(raw_data, foot_data, list_output_chunks, validity)
+tot_input_fl, tot_output_fl = get_input_output_fl(raw_data, foot_data, list_output_chunks, validity)
+tot_input_self_fr, tot_output_self_fr = get_input_output_self_fr(raw_data, foot_data, list_output_chunks, validity)
+tot_input_self_fl, tot_output_self_fl = get_input_output_self_fl(raw_data, foot_data, list_output_chunks, validity)
 
 with open(os.path.join(OUTPUTS_FOLDER,'list_avg_velocity_mm_fixed.pkl'),'wb') as f0:
     pickle.dump(avg_velocity, f0)
-sys.exit()
 with open(os.path.join(OUTPUTS_FOLDER,'list_input_fr_mm_fixed.pkl'),'wb') as f1:
     pickle.dump(tot_input_fr, f1)
 with open(os.path.join(OUTPUTS_FOLDER,'list_output_fr_mm_fixed.pkl'),'wb') as f2:
@@ -89,7 +79,7 @@ with open(os.path.join(OUTPUTS_FOLDER,'list_fly_id_mm_fixed.pkl'),'wb') as f10:
 
 print(f'Data saved in the {OUTPUTS_FOLDER} folder')
 
-# Let's get it as matrices 
+# Also saving these quantities as matrices 
 input_fr_matrix, output_fr_matrix = tot_input_fr[0], tot_output_fr[0]
 input_fl_matrix, output_fl_matrix = tot_input_fl[0], tot_output_fl[0]
 input_self_fr_matrix, output_self_fr_matrix = tot_input_self_fr[0], tot_output_self_fr[0]
@@ -112,11 +102,9 @@ for ii in range(1, len(tot_input_fr)):
     matrix_fly_id = np.vstack((matrix_fly_id, fly_id_list[ii] * np.ones((tot_input_fr[ii].shape[0],1))))
     matrix_fly_id_od = np.vstack((matrix_fly_id_od, fly_id_list[ii] * np.ones((tot_input_fl[ii].shape[0],1))))
 
-print(matrix_video_id.shape)
-print(input_fr_matrix.shape)
 np.save(os.path.join(OUTPUTS_FOLDER,'video_id_diag_mm_norm_fixed.npy'),matrix_video_id)
 np.save(os.path.join(OUTPUTS_FOLDER,'video_id_odiag_mm_norm_fixed.npy'),matrix_video_id_od)
-sys.exit()
+
 
 np.save(os.path.join(OUTPUTS_FOLDER,'input_fr_matrix.npy'),input_fr_matrix)
 np.save(os.path.join(OUTPUTS_FOLDER,'output_fr_matrix.npy'),output_fr_matrix)
@@ -130,4 +118,5 @@ np.save(os.path.join(OUTPUTS_FOLDER,'video_id_diag.npy'),matrix_video_id)
 np.save(os.path.join(OUTPUTS_FOLDER,'video_id_odiag.npy'),matrix_video_id_od)
 np.save(os.path.join(OUTPUTS_FOLDER,'fly_id_diag.npy'),matrix_fly_id)
 np.save(os.path.join(OUTPUTS_FOLDER,'fly_id_odiag.npy'),matrix_fly_id_od)
+
 
