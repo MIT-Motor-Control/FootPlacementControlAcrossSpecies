@@ -1,15 +1,12 @@
 function [foot_contact_matrix] = foot_contact_detection(input_data)
-%foot_contact_detection extracts the timings of contact for each individual foot
+% FOOT_CONTACT_DETECTION extracts the timings of contact for each individual foot
 % 
 % INPUTS
-% ======
-% input_data is a matrix containing the timeseries (row) of the positions
-% of each foot (column) - the value is 0 when the foot isn't in contact
+%     - input_data : contains the timeseries (in rows) of each foot positions in the foreaft direction - 0 when the foot is in its swing phase
 %
 % OUTPUTS
-% =======
-% foot_contact_matrix is -1 for toe off and 1 for foot strike
-% Antoine De Comite - 11.19.2023
+% - foot_contact_matrix : contains -1 for toe off, 1 for foot strike and 0 for any other event
+% @Antoine De Comite - MIT 2025
 
 
 foot_contact_matrix = zeros(size(input_data,2),size(input_data,3));
