@@ -83,7 +83,7 @@ for condition = 1 : length(StringArray)
                         y_position_local(leg,:,:) = reconstructed_local_mat_(leg+1,2,:);
                         head_marker = reconstructed_local_mat_(8,1,:);
                         vel_marker = sqrt(reconstructed_local_mat_(leg+8,1,:).^2 + reconstructed_local_mat_(leg+8,2,:).^2);
-                        [local_pos_mat(:,:,leg),~,~] = extract_foot_placement(x_plot, x_position_local(leg,:,:),y_position_local(leg,:,:), vel_marker, head_marker);
+                        [local_pos_mat(:,:,leg)] = extract_foot_placement(x_plot, x_position_local(leg,:,:),y_position_local(leg,:,:), vel_marker, head_marker);
                     end
                     x_position_local(5,:,:) = reconstructed_local_mat_(1,1,:);
                     x_position_local(6,:,:) = reconstructed_local_mat_(6,1,:);

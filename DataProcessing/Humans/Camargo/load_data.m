@@ -25,7 +25,7 @@ for ii = 1 : length(myFiles)
         my_markers_matrix(:,2,:) = markers_matrix(:,25,:); % Right foot marker
         my_markers_matrix(:,3,:) = markers_matrix(:,21,:); % Left foot marker
         
-        % Compute velocity for all the markers - Using 4th order centered finite difference scheme
+        % Compute velocity for all the markers - Using 4th order centered finite difference scheme (data was collected at 200Hz)
         markers_velocity = zeros(size(my_markers_matrix));
         dt = 1/200;
         markers_velocity(3:end-2,:,:) = (my_markers_matrix(1:end-4,:,:) - 8*my_markers_matrix(2:end-3,:,:) + 8*my_markers_matrix(4:end-1,:,:) - my_markers_matrix(5:end,:,:))/(12*dt);
