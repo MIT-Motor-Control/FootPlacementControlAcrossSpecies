@@ -69,35 +69,6 @@ def load_data_camargo():
     list_sub = [tot_subject1, tot_subject2]
     return list_io1, list_io2, list_sub
 
-
-def load_data_camargo_touchdown():
-    """ Load the processed data from the Camargo dataset"""
-    input_path = os.path.join(os.getcwd(),'Datasets','Humans','Camargo','processed_touchdown_v2')
-    with open(os.path.join(input_path,'tot_input_fr.pkl'),'rb') as f1:
-        tot_input_leg1 = pickle.load(f1)
-    with open(os.path.join(input_path,'tot_output_fr.pkl'),'rb') as f2:
-        tot_output_leg1 = pickle.load(f2)
-    with open(os.path.join(input_path,'tot_input_fl.pkl'),'rb') as f3:
-        tot_input_leg2 = pickle.load(f3)
-    with open(os.path.join(input_path,'tot_output_fl.pkl'),'rb') as f4:
-        tot_output_leg2 = pickle.load(f4)
-    with open(os.path.join(input_path,'tot_input_self_fr.pkl'),'rb') as f1:
-        tot_input_self_leg1 = pickle.load(f1)
-    with open(os.path.join(input_path,'tot_input_self_fl.pkl'),'rb') as f1:
-        tot_input_self_leg2 = pickle.load(f1)
-    with open(os.path.join(input_path,'tot_output_self_fr.pkl'),'rb') as f1:
-        tot_output_self_leg1 = pickle.load(f1)
-    with open(os.path.join(input_path,'tot_output_self_fl.pkl'),'rb') as f1:
-        tot_output_self_leg2 = pickle.load(f1)
-    with open(os.path.join(input_path,'tot_subject1.pkl'),'rb') as f1:
-        tot_subject1 = pickle.load(f1)
-    with open(os.path.join(input_path,'tot_subject2.pkl'),'rb') as f1:
-        tot_subject2 = pickle.load(f1)
-    list_io1 = [tot_input_leg1, tot_input_self_leg1, tot_output_leg1, tot_output_self_leg1]
-    list_io2 = [tot_input_leg2, tot_input_self_leg2, tot_output_leg2, tot_output_self_leg2]
-    list_sub = [tot_subject1, tot_subject2]
-    return list_io1, list_io2, list_sub
-
 def load_data_camargo_timing():
     """ Load the processed data from the Camargo dataset"""
     input_path = os.path.join(os.getcwd(),'Datasets','Humans','Camargo','processed_time_bis')
@@ -389,34 +360,6 @@ def multilinear_ols_rsquare_gains(X,y):
     rsquare = 1 - np.sum(np.square(y-yhat)) / np.sum(np.square(y))
     return rsquare, theta_hat
 
-def get_rsquare_self_time_matrix_baseline(tot_input_self_matrix, difference_matrix, tot_subject):
-    """
-    Computes the rsquare based on the multilinear regression for the camargo dataset
-    """
-    n_subjects = int(np.max(tot_subject))+1
-    r_square_matrix = np.zeros((n_subjects,101))
-    for subject in tqdm(range(n_subjects)):
-        local_input = tot_input_self_matrix[tot_subject==subject,:,:]
-        local_output = difference_matrix[tot_subject==subject,3] - np.nanmean(difference_matrix[tot_subject==subject,3])
-        for time in range(local_input.shape[1]):
-            design_matrix = np.hstack((np.ones((local_input.shape[0],1)), np.squeeze(local_input[:,time,:])))
-            a ,b = multilinear_ols_rsquare_gains(design_matrix, local_output)
-            pred_output = b @ design_matrix.T
-            # if time == 165:
-            #     fig, axs = plt.subplots(1,1,figsize=(3,3))
-            #     axs.spines[['top','right']].set_visible(False)
-            #     axs.scatter(local_output,pred_output,color='r',s=20,alpha=0.5)
-            #     axs.plot([-200,200],[-200,200],'k:',lw=2)
-            #     axs.set_xlabel('True deviation'), axs.set_ylabel('Predicted deviation')
-            #     axs.set_xlim([-200,200]), axs.set_ylim([-200,200])
-            #     plt.tight_layout()
-            #     fig.savefig(os.path.join(os.getcwd(),'humans_results','figures','scatter_baseline.png'),bbox_inches='tight')
-            #     fig.savefig(os.path.join(os.getcwd(),'humans_results','figures','scatter_baseline.svg'),bbox_inches='tight')
-            #     plt.show()
-            r_square_matrix[subject, time] = multilinear_ols_rsquare(design_matrix, local_output)
-    
-    return r_square_matrix
-
 
 def get_rsquare_self_matrix_baseline(tot_input_self_matrix, tot_output_matrix, tot_subject, direction):
     """
@@ -435,17 +378,6 @@ def get_rsquare_self_matrix_baseline(tot_input_self_matrix, tot_output_matrix, t
             design_matrix = np.hstack((np.ones((local_input.shape[0],1)), np.squeeze(local_input[:,time,:])))
             a ,b = multilinear_ols_rsquare_gains(design_matrix, local_output)
             pred_output = b @ design_matrix.T
-            # if time == 165:
-            #     fig, axs = plt.subplots(1,1,figsize=(3,3))
-            #     axs.spines[['top','right']].set_visible(False)
-            #     axs.scatter(local_output,pred_output,color='r',s=20,alpha=0.5)
-            #     axs.plot([-200,200],[-200,200],'k:',lw=2)
-            #     axs.set_xlabel('True deviation'), axs.set_ylabel('Predicted deviation')
-            #     axs.set_xlim([-200,200]), axs.set_ylim([-200,200])
-            #     plt.tight_layout()
-            #     fig.savefig(os.path.join(os.getcwd(),'humans_results','figures','scatter_baseline.png'),bbox_inches='tight')
-            #     fig.savefig(os.path.join(os.getcwd(),'humans_results','figures','scatter_baseline.svg'),bbox_inches='tight')
-            #     plt.show()
             r_square_matrix[subject, time] = multilinear_ols_rsquare(design_matrix, local_output)
     
     return r_square_matrix
@@ -539,33 +471,6 @@ def compute_ffwd_inputs(tot_input_leg1, tot_subject1):
     plt.show()
     return mat_slope, mat_pvalue
 
-
-def compute_variance_contributions(matrix_rsquares_ffwd, matrix_foreaft_fb, matrix_lateral_fb):
-    """
-    Computes the individual contributions of feedforward and feedabck to the total variance explained for each individual
-    """
-    output_matrix = np.zeros((matrix_rsquares_ffwd.shape[0],2,2))
-    for subject in range(output_matrix.shape[0]):
-        output_matrix[subject,0,0] = matrix_rsquares_ffwd[subject,0]
-        output_matrix[subject,0,1] = matrix_rsquares_ffwd[subject,1]
-        output_matrix[subject,1,0] = matrix_foreaft_fb[subject,75]*(1-matrix_rsquares_ffwd[subject,0])
-        output_matrix[subject,1,1] = matrix_lateral_fb[subject,75]*(1-matrix_rsquares_ffwd[subject,1])
-
-    return output_matrix
-
-def compute_variance_contributions_time(matrix_rsquares_ffwd, matrix_foreaft_fb, matrix_lateral_fb):
-    """
-    Computes the individual contributions of ffwd and fb to the total variance as a function of time for each individual
-    """
-    output_matrix = np.zeros((matrix_rsquares_ffwd.shape[0],2,2,101))
-    for subject in range(output_matrix.shape[0]):
-        for time in range(101):
-            output_matrix[subject,0,0,time] = matrix_rsquares_ffwd[subject,0]
-            output_matrix[subject,0,1,time] = matrix_rsquares_ffwd[subject,1]
-            output_matrix[subject,1,0,time] = matrix_foreaft_fb[subject,time]*(1-matrix_rsquares_ffwd[subject,0])
-            output_matrix[subject,1,1,time] = matrix_lateral_fb[subject,time]*(1-matrix_rsquares_ffwd[subject,1])
-
-    return output_matrix
 
 
 def compute_regression_fr(tot_input_matrix, tot_output_matrix, tot_sub):
@@ -752,44 +657,6 @@ def regression_laterality(tot_input_matrix, tot_output_matrix, tot_sub):
                         
     return regression_matrix_small, regression_matrix_large
 
-def get_rsquare_self_matrix_camargo(tot_input_matrix, tot_input_self_matrix, tot_output_matrix, tot_subject, direction):
-    """
-    Computes the rsquare based on the multilinear regression for the camargo dataset
-    """
-    n_subjects = int(np.max(tot_subject))+1
-    r_square_matrix = np.zeros(((n_subjects,101)))
-    for subject in tqdm(range(n_subjects)):
-        local_input = tot_input_matrix[tot_subject==subject,:,:]
-        local_self = tot_input_self_matrix[tot_subject==subject,:,:]
-        local_output = tot_output_matrix[tot_subject==subject,direction]
-        # Normalization of the inputs
-        local_mean_f = np.nanmean(local_self[:,:,0],0)
-        local_mean_fv = np.nanmean(local_self[:,:,2],0)
-        dtot = local_mean_f[-1] - np.nanmean(local_mean_f[20:30]) # Difference totale
-        dind = local_self[:,-1,0] - np.nanmean(local_self[:,20:30,0],1) # Difference individual
-        scaling_factors = dind / dtot
-        #fig, axs = plt.subplots(1,1,figsize=(5,3))
-        for line in range(local_self.shape[0]):
-            local_norm =  scaling_factors[line] * (local_mean_f - np.nanmean(local_mean_f[20:30])) + np.nanmean(local_self[line,20:30,0])
-            local_norm_v = scaling_factors[line] * (local_mean_fv - np.nanmean(local_mean_fv[20:30])) + np.nanmean(local_self[line,20:30,2])
-            local_self[line,:,0] = local_self[line,:,0] - local_norm
-            #axs.plot(local_self[line,:,0],'k',lw=0.5)
-            local_self[line,:,2] = local_self[line,:,2] - local_norm_v
-        #plt.show()
-        local_self[:,:,1] = local_self[:,:,1] - np.nanmean(local_self[:,:,1],0)
-        local_self[:,:,3] = local_self[:,:,3] - np.nanmean(local_self[:,:,3],0)
-        # Normalization of the outputs
-        tmp_vel = np.nanmean(local_input[:,:,2],1)
-        if direction==0:
-            subjectlin = scipy.stats.linregress(tmp_vel, local_output)
-            local_output = local_output - (tmp_vel*subjectlin.slope + subjectlin.intercept)
-        else:
-            local_output = local_output - np.nanmean(local_output)
-        for time in range(local_input.shape[1]-1):
-            design_matrix = np.hstack((np.ones((local_self.shape[0],1)), np.squeeze(local_self[:,time,:])))
-            r_square_matrix[subject,time] = multilinear_ols_rsquare(design_matrix, local_output)
-
-    return r_square_matrix
 
 def get_rsquare_time_matrix_camargo(tot_input_matrix, difference_matrix, tot_subject):
     """
@@ -809,19 +676,10 @@ def get_rsquare_time_matrix_camargo(tot_input_matrix, difference_matrix, tot_sub
         local_input[:,:,1] = local_input[:,:,1] - np.nanmean(local_input[:,:,1],0)
         local_input[:,:,3] = local_input[:,:,3] - np.nanmean(local_input[:,:,3],0)
         local_input[:,:,2] = local_input[:,:,2] - np.expand_dims(tmp_vel,-1)
-
-        
         for line in range(local_input.shape[0]):
             xinput = np.arange(101)
             subjectlin = scipy.stats.linregress(xinput, local_input[line,:,0])
             local_input[line,:,0] = local_input[line,:,0] - (xinput*subjectlin.slope + subjectlin.intercept)
-        # fig, axs = plt.subplots(1,4,figsize=(12,3))
-        # axs[0].spines[['top','right']].set_visible(False), axs[1].spines[['top','right']].set_visible(False), axs[2].spines[['top','right']].set_visible(False), axs[3].spines[['top','right']].set_visible(False) 
-        # axs[0].scatter(local_input[:,75,0], local_output,color='b',s=5), axs[1].scatter(local_input[:,75,1], local_output,color='b',s=5), axs[2].scatter(local_input[:,75,2], local_output,color='b',s=5), axs[3].scatter(local_input[:,75,3], local_output,color='b',s=5) 
-        # axs[0].scatter(local_input[:,50,0], local_output,color='k',s=5), axs[1].scatter(local_input[:,50,1], local_output,color='k',s=5), axs[2].scatter(local_input[:,50,2], local_output,color='k',s=5), axs[3].scatter(local_input[:,50,3], local_output,color='k',s=5) 
-        # axs[0].scatter(local_input[:,0,0], local_output,color='r',s=5), axs[1].scatter(local_input[:,0,1], local_output,color='r',s=5), axs[2].scatter(local_input[:,0,2], local_output,color='r',s=5), axs[3].scatter(local_input[:,0,3], local_output,color='r',s=5) 
-        # plt.tight_layout()
-        # plt.show()
         # Output normalization
         idx_local_nans = np.where((~np.isnan(local_output)) & (~np.isnan(tmp_vel)))[0]
         for time in range(local_input.shape[1]):
@@ -865,99 +723,8 @@ def get_rsquare_matrix_camargo(tot_input_matrix, tot_output_matrix, tot_subject,
             r_square_matrix[subject,time] = a
             gains_matrix[subject,time,:] = b
             test_pred_output = b @ design_matrix.T
-            # if time == 65:
-            #     fig, axs = plt.subplots(1,1,figsize=(3,3))
-            #     axs.spines[['top','right']].set_visible(False)
-            #     axs.scatter(local_output, test_pred_output, color='b', s=20, alpha=0.5)
-            #     axs.plot([-200,200],[-200,200],'k:',lw=2)
-            #     axs.set_xlim([-200,200]), axs.set_ylim([-200,200])
-            #     axs.set_xlabel('True deviation'), axs.set_ylabel('Predicted deviation')
-            #     plt.tight_layout()
-            #     fig.savefig(os.path.join(os.getcwd(),'humans_results','figures','scatterplot_predictions.png'),bbox_inches='tight')
-            #     fig.savefig(os.path.join(os.getcwd(),'humans_results','figures','scatterplot_predictions.svg'),bbox_inches='tight')
-            #     plt.show()
     return r_square_matrix, gains_matrix
 
-def get_rsquare_matrix_camargo_old(tot_input_matrix, tot_output_matrix, tot_subject, direction):
-    """
-    Computes the rsquare based on the multilinear regression for the camargo dataset
-    """
-    n_subjects = int(np.max(tot_subject))+1
-    r_square_matrix = np.zeros((n_subjects, 101))
-    for subject in range(n_subjects):
-        local_input = tot_input_matrix[tot_subject==subject,:,:]
-        local_output = tot_output_matrix[tot_subject==subject,direction]
-        # Normalization of the inputs 
-        local_input = local_input - np.nanmean(local_input,0)
-        # Normalization of the outputs 
-        local_output = local_output - np.nanmean(local_output,0)
-        for time in range(local_input.shape[1]):
-            design_matrix = np.hstack((np.ones((local_input.shape[0],1)),np.squeeze(local_input[:,time,:])))
-            r_square_matrix[subject,time] = multilinear_ols_rsquare(design_matrix, local_output)
-    
-    return r_square_matrix
-
-
-
-def get_rsquare_matrix_matthis(list_events, list_procs, leg_id, direction):
-    """
-    Computes the rsquare based on the multilinear regression for the matthis dataset
-
-    INPUTS 
-    ======
-    - list_events contains the timing information for the foot contacts 
-    - list_procs contains the time series of the marker positions and velocities
-    - leg_id indicates whether we are investigating the left (0) or right (1) leg
-    - direction indicates whether we are investigating the foreaft (0) or lateral (1) direction
-    """
-    n_subjects=  len(list_events)
-    map_variable = [0, 1, 2, 9, 10, 11]
-    r_square_matrix = np.zeros((n_subjects,101))
-    for subject in range(n_subjects):
-        subject_timings = list_events[subject]
-        subject_inputs = list_procs[subject]
-        rt, lt = get_timing_contact(subject_timings)
-        ilt, irt, _, _ = get_input_lines(subject_inputs, rt, lt)
-        for time in range(irt.shape[1]): # Loop over the different time instant
-            if leg_id==0:
-                tmp_input = ilt[:,time,map_variable]
-                tmp_output = ilt[:,-1,3+direction]
-            else:
-                tmp_input = irt[:,time,map_variable]
-                tmp_output = irt[:,-1,6+direction]
-            design_matrix = np.hstack((np.ones((tmp_input.shape[0],1)),tmp_input))
-            r_square_matrix[subject, time] = multilinear_ols_rsquare(design_matrix, tmp_output)
-    return r_square_matrix
-
-def get_rsquare_self_matrix_matthis(list_events, list_procs, leg_id, direction):
-    """
-    Computes the rsquare of the self-prediction for the matthis datasets
-
-    INPUTS 
-    ======
-    - list_events contains the timing information for the foot contacts 
-    - list_procs contains the time series of the marker positions and velocities
-    - leg_id indicates whether we are investigating the left (0) or right (1) leg
-    - direction indicates whether we are investigating the foreaft (0) or lateral (1) direction
-    """
-    n_subjects = len(list_events)
-    r_square_matrix = np.zeros((n_subjects,101))
-    for subject in range(n_subjects):
-        subject_timings = list_events[subject]
-        subject_inputs = list_procs[subject]
-        rt, lt = get_timing_contact(subject_timings)
-        ilt, irt, _, _ = get_input_lines(subject_inputs, rt, lt)
-        for time in range(irt.shape[1]):
-            if leg_id==0:
-                tmp_input = ilt[:,time,[3+direction, 12+direction]]
-                tmp_output = ilt[:,-1,3+direction]
-            else:
-                tmp_input = irt[:,time,[6+direction, 15+direction]]
-                tmp_output = irt[:,-1,6+direction]
-            design_matrix = np.hstack((np.ones((tmp_input.shape[0],1)),tmp_input))
-            #print(design_matrix.shape)
-            r_square_matrix[subject, time] = multilinear_ols_rsquare(design_matrix, tmp_output)
-    return r_square_matrix
 
 def concatenate_data(tot_input_list, tot_input_list_self, tot_output_list, list_trial_id):
     """
@@ -977,45 +744,6 @@ def concatenate_data(tot_input_list, tot_input_list_self, tot_output_list, list_
 
     return tot_input_matrix, tot_input_self_matrix, tot_output_matrix, tot_output_matrix, tot_trial_matrix, tot_leg_matrix
 
-
-
-
-def get_io_humans(list_input_mathis):
-    """
-    Extracts the input and outputs from the Mathis dataset 
-    """
-    tot_input_list, tot_input_list_self, tot_output_list, tot_output_list_self = [], [], [], []
-    for ii in range(len(list_input_mathis)):
-        tmp_contacts = np.arange(0, list_input_mathis[ii].shape[0],10)
-        tot_input_matrix = np.zeros((1,20,4))
-        tot_output_matrix = np.zeros((1,2))
-        tot_input_self_matrix = np.zeros((1,20,4))
-        for contact in range(2, len(tmp_contacts)-1):
-            # Compute the reference position ...
-            bool_leg1 = (np.mod(contact,2)==0)
-            if bool_leg1:
-                ref_1 = np.nanmean(list_input_mathis[ii][tmp_contacts[contact-1]+2:tmp_contacts[contact]-2,6])
-                ref_2 = np.nanmean(list_input_mathis[ii][tmp_contacts[contact-1]+2:tmp_contacts[contact]-2,7])
-            else:
-                ref_1 = np.nanmean(list_input_mathis[ii][tmp_contacts[contact-1]+2:tmp_contacts[contact]-2,3])
-                ref_2 = np.nanmean(list_input_mathis[ii][tmp_contacts[contact-1]+2:tmp_contacts[contact]-2,4])
-            tmp_input = list_input_mathis[ii][tmp_contacts[contact-2]:tmp_contacts[contact],[0,1,12,13]] - np.array([[ref_1, ref_2, 0, 0]])
-            if bool_leg1:
-                tmp_output = np.nanmean(list_input_mathis[ii][tmp_contacts[contact]:tmp_contacts[contact+1],[3,4]],0) - np.array([ref_1, ref_2])
-                tmp_input_self = list_input_mathis[ii][tmp_contacts[contact-2]:tmp_contacts[contact],[3,4,15,16]] - np.array([[ref_1, ref_2, 0, 0]])
-            else:
-                tmp_output = np.nanmean(list_input_mathis[ii][tmp_contacts[contact]:tmp_contacts[contact+1],[6,7]],0) - np.array([ref_1, ref_2])
-                tmp_input_self = list_input_mathis[ii][tmp_contacts[contact-2]:tmp_contacts[contact],[6,7,18,19]] - np.array([[ref_1, ref_2, 0, 0]])
-            
-            tot_input_matrix = np.concatenate((tot_input_matrix, np.expand_dims(tmp_input,0)),0)
-            tot_output_matrix = np.concatenate((tot_output_matrix, np.expand_dims(tmp_output,0)),0)
-            tot_input_self_matrix = np.concatenate((tot_input_self_matrix, np.expand_dims(tmp_input_self,0)),0)
-        tot_input_list.append(tot_input_matrix[1:,:,:])
-        tot_input_list_self.append(tot_input_self_matrix[1:,:,:])
-        tot_output_list.append(tot_output_matrix[1:,:])
-        tot_output_list_self.append(tot_output_matrix[1:,:])
-
-    return tot_input_list, tot_input_list_self, tot_output_list, tot_output_list_self
 
 def compute_feedforward_rsquare(tot_input, tot_output, tot_sub):
     """
