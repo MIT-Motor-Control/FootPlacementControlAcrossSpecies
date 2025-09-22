@@ -27,11 +27,7 @@ for animal in range(1, 80):
     tot_animal_absolute = np.vstack((tot_animal_absolute, animal*np.ones((body_i_abs[animal].shape[0],1))))
 
 
-difference_matrix = np.load(os.path.join(os.getcwd(),'Datasets','Mouse','Klibaite','Control','difference_matrix_mice.npy'))
 
-
-vel_tier = add_velocity_tier(tot_input_list, tot_input_self)
-vel_tier_od = add_velocity_tier(tot_input_list_od, tot_input_self_od)
 velocity_vector = get_velocity_vector(tot_input_list, tot_input_self)
 velocity_vector_od = get_velocity_vector(tot_input_list_od, tot_input_self_od)
 
