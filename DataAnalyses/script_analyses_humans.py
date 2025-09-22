@@ -13,10 +13,7 @@ from utils.plot_functions_humans import *
 warnings.filterwarnings('ignore')
 PATH_CAMARGO_DATASET = os.path.join(os.getcwd(), 'Datasets','Humans','Camargo','processed')
 PATH_CAMARGO_DATASET_TIME = os.path.join(os.getcwd(), 'Datasets','Humans','Camargo','processed_time_bis_250')
-# difference_matrix = np.load(os.path.join(PATH_CAMARGO_DATASET_TIME,'difference_matrix_humans.npy'))
 
-tmp_output_path = os.path.join(os.getcwd(),'round_2_analysis')
-os.makedirs(tmp_output_path, exist_ok=True)
 
 # Loading the datasets 
 list_io1, list_io2, list_sub = load_data_camargo()
@@ -48,7 +45,27 @@ rsquare_lateral_body, gains_matrix = get_rsquare_matrix_camargo(tot_input_leg1_t
 rsquare_foreaft_self = get_rsquare_self_matrix_baseline(tot_self_input_leg1, tot_output_leg1, tot_sub1, 0)
 rsquare_lateral_self = get_rsquare_self_matrix_baseline(tot_self_input_leg1, tot_output_leg1, tot_sub1, 1)
 
-plot_rsquares_final(rsquare_foreaft_body, rsquare_lateral_body, rsquare_foreaft_self, rsquare_lateral_self, bool_plot=True, bool_save=False, figname='rsquares_final_velocity_250')
+plot_rsquares_final(rsquare_foreaft_body, rsquare_lateral_body, rsquare_foreaft_self, rsquare_lateral_self, bool_plot=False, bool_save=False, figname='rsquares_final_velocity_250')
+
+# Represent the figure for the control amplitude 
+ind_max = np.zeros((rsquare_foreaft_body.shape[0],2))
+for subject in range(ind_max.shape[0]):
+    ind_max[subject,0] = np.max(rsquare_foreaft_body[subject,:] - rsquare_foreaft_self[subject,:])
+    ind_max[subject,1] = np.max(rsquare_lateral_body[subject,:] - rsquare_lateral_self[subject,:])
+
+
+fig, axs = plt.subplots(1,1,figsize=(3,3))
+axs.spines[['top','right']].set_visible(False)
+vec_subject_x = np.linspace(0.8,1.2,21)
+for subject in range(21):
+    axs.scatter(vec_subject_x[subject], ind_max[subject,1],color='k',s=5, alpha=0.2)
+axs.scatter(1,np.nanmean(ind_max[:,1]),color='k',s=20)
+print(np.nanmean(ind_max[:,1]))
+print(np.nanstd(ind_max[:,1]))
+axs.plot([1,1], [np.nanmean(ind_max[:,1])+np.nanstd(ind_max[:,1]), np.nanmean(ind_max[:,1])-np.nanstd(ind_max[:,1])],color='k',lw=2)
+axs.set_ylim([-0.05,1.05])
+axs.set_xlim([0,4])
+plt.tight_layout()
 
 
 ############################################################
@@ -76,4 +93,4 @@ plot_correlation_horizon_final(list_input_time, list_subjects, bool_plot=False, 
 ###########################################################################
 
 regression_small, regression_large = regression_laterality(tot_input_leg1, tot_output_leg1, tot_sub1)
-plot_laterality_regression(regression_small, regression_large, bool_plot=False, bool_save=False, figname='laterality_human')
+plot_laterality_regression(regression_small, regression_large, bool_plot=True, bool_save=False, figname='laterality_human')
