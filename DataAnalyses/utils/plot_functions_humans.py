@@ -146,36 +146,8 @@ def plot_feedforward_output_humans_time_paper(tot_input_leg1, tot_output_leg1, t
     tot_input = tot_input_leg1[tot_subject1==local_sub,:,:]
     tot_output = tot_output_leg1[tot_subject1==local_sub,:]
     tot_velocity = np.nanmean(tot_input_leg1[tot_subject1==local_sub,:,2],1)
-
-    fig, axs = plt.subplots(1,1,figsize=(2,3))
-    axs.spines[['top','right']].set_visible(False)
-    axs.scatter(tot_velocity, tot_output[:,0], s=20, color='b', alpha=0.5)
-    local_lin = scipy.stats.linregress(tot_velocity[tot_output[:,0]>400],tot_output[tot_output[:,0]>400,0])
     xinput = np.linspace(800,1800)
-    print(local_lin.rvalue**2)
-    axs.plot(xinput, local_lin.intercept+xinput*local_lin.slope,color='k',lw=3)
-    axs.set_xlim([500,2000]), axs.set_ylim([400,900]), axs.set_xlabel('Velocity'), axs.set_ylabel('Step length')
-    axs.set_yticks([400,500,600,700,800,900]), axs.set_yticklabels(['0.4','0.5','0.6','0.7','0.8','0.9'])
-    axs.set_xticks([500,1000,1500,2000]), axs.set_xticklabels(['0.5','1','1.5','2'])
-    plt.tight_layout()
-    if bool_save:
-        fig.savefig(os.path.join(PATH_FIGURES,f'{figname}_exemplar_data_length.png'))
-        fig.savefig(os.path.join(PATH_FIGURES,f'{figname}_exemplar_data_length.svg'))
 
-    fig, axs = plt.subplots(1,1,figsize=(2,3))
-    axs.spines[['top','right']].set_visible(False)
-    axs.scatter(tot_velocity, tot_output[:,1], s=20, color='b', alpha=0.5)
-    local_lin = scipy.stats.linregress(tot_velocity[tot_output[:,0]>400], tot_output[tot_output[:,0]>400,1])
-    print(local_lin.rvalue**2)
-    xinput = np.linspace(800,1800)
-    axs.plot(xinput, local_lin.intercept + xinput*local_lin.slope,color='k',lw=3)
-    axs.set_xlim([500,2000]), axs.set_xlabel('Velocity'), axs.set_ylabel('Step width')
-    axs.set_ylim([-450, 50]), axs.set_yticks([-400,-300,-200,-100,0]), axs.set_yticklabels(['-0.4','-0.3','-0.2','-0.1','0'])
-    axs.set_xticks([500,1000,1500,2000]), axs.set_xticklabels(['0.5','1','1.5','2'])
-    plt.tight_layout()
-    if bool_save:
-        fig.savefig(os.path.join(PATH_FIGURES,f'{figname}_exemplar_data_width.png'))
-        fig.savefig(os.path.join(PATH_FIGURES,f'{figname}_exemplar_data_width.svg'))
 
     fig, axs = plt.subplots(1,1,figsize=(2,3))
     axs.spines[['top','right']].set_visible(False)
