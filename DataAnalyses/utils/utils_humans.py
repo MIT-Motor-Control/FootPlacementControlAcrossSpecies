@@ -366,7 +366,7 @@ def get_rsquare_self_matrix_baseline(tot_input_self_matrix, tot_output_matrix, t
     Computes the rsquare based on the multilinear regression for the camargo dataset
     """
     n_subjects = int(np.max(tot_subject))+1
-    r_square_matrix = np.zeros((n_subjects,201))
+    r_square_matrix = np.zeros((n_subjects,101))
     for subject in tqdm(range(n_subjects)):
         local_input = tot_input_self_matrix[tot_subject==subject,:,:]
         local_output = tot_output_matrix[tot_subject==subject, direction]

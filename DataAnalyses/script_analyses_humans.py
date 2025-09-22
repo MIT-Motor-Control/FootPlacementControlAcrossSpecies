@@ -35,15 +35,12 @@ tot_sub1_time, tot_sub2_time = list_sub_time[0], list_sub_time[1]
 ### PART 1 - Velocity dependent ffwd controller ###
 ###################################################
 plot_feedforward_output_humans_time_paper(tot_input_leg1_time, tot_output_leg1_time, tot_sub1_time, bool_plot=False, bool_save=False, bool_fb=False, figname='ffwd_output_h_final_time')
-plot_feedforward_output_humans_paper(tot_input_leg1, tot_output_leg1, tot_sub1, bool_plot=True, bool_save=False, bool_fb=False, figname='ffwd_output_h_final')
-plot_feedforward_body_humans_final(tot_input_leg1, tot_sub1, bool_plot=False, bool_save=False, figname='ffwd_body_h_final')
+plot_feedforward_output_humans_paper(tot_input_leg1, tot_output_leg1, tot_sub1, bool_plot=False, bool_save=False, bool_fb=False, figname='ffwd_output_h_final')
 
 
 ###############################################################
 ### PART 2 - Controller inference on the remaining variance ###
 ###############################################################
-rsquare_time_body = get_rsquare_time_matrix_camargo(tot_input_leg1_time, tot_output_leg1_time, tot_sub1_time)
-rsquare_time_self = get_rsquare_self_time_matrix_baseline(tot_self_input_leg1_time, tot_output_leg1_time, tot_sub1_time)
 
 rsquare_foreaft_body,_ = get_rsquare_matrix_camargo(tot_input_leg1_time, tot_output_leg1_time, tot_sub1_time, 0)
 rsquare_lateral_body, gains_matrix = get_rsquare_matrix_camargo(tot_input_leg1_time, tot_output_leg1_time, tot_sub1_time, 1)
@@ -51,7 +48,7 @@ rsquare_lateral_body, gains_matrix = get_rsquare_matrix_camargo(tot_input_leg1_t
 rsquare_foreaft_self = get_rsquare_self_matrix_baseline(tot_self_input_leg1, tot_output_leg1, tot_sub1, 0)
 rsquare_lateral_self = get_rsquare_self_matrix_baseline(tot_self_input_leg1, tot_output_leg1, tot_sub1, 1)
 
-plot_rsquares_final(rsquare_foreaft_body, rsquare_lateral_body, rsquare_foreaft_self, rsquare_lateral_self, bool_plot=True, bool_save=True, figname='rsquares_final_velocity_250')
+plot_rsquares_final(rsquare_foreaft_body, rsquare_lateral_body, rsquare_foreaft_self, rsquare_lateral_self, bool_plot=True, bool_save=False, figname='rsquares_final_velocity_250')
 
 
 ############################################################
