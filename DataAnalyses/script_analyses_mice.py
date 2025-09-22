@@ -5,7 +5,7 @@ import warnings
 import scipy
 import scipy.stats
 from tqdm import tqdm
-from utils.test_plots_humans import *
+# from utils.test_plots_humans import *
 from utils.utils_mice import *
 from utils.plot_functions_mice import *
 warnings.filterwarnings('ignore')
@@ -39,8 +39,7 @@ velocity_vector_od = get_velocity_vector(tot_input_list_od, tot_input_self_od)
 ###################################################
 ### PART 1 - Velocity-dependent ffwd controller ###
 ###################################################
-plot_feedforward_controller_final(velocity_vector, tot_output_list, tot_animal, tot_input_absolute, tot_output_absolute, tot_animal_absolute, bool_plot=False, bool_save=False, figname='feedforward_figures_mouse')
-plot_feedforward_body_mice_final(tot_input_list, tot_animal, bool_plot=False, bool_save=False, figname='ffwd_body_mouse')
+plot_feedforward_controller_final(velocity_vector, tot_output_list, tot_animal, tot_input_absolute, tot_output_absolute, tot_animal_absolute, bool_plot=True, bool_save=False, figname='feedforward_figures_mouse')
 
 
 list_input_horizon, list_output_horizon = [], []

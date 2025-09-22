@@ -568,23 +568,7 @@ def plot_feedforward_controller_final(velocity_vector, tot_output_list, tot_anim
     wilcox_slopes = scipy.stats.wilcoxon(mat_slopes[:,0],mat_slopes[:,1])
     print(wilcox_slopes)
 
-    fig, axs = plt.subplots(1,1,figsize=(3,3))
-    axs.spines[['top','right']].set_visible(False)
-    x_vec_animals = np.linspace(0.9,1.1,80)
-    for line in range(mat_slopes.shape[0]):
-        axs.scatter(x_vec_animals[line], mat_slopes[line,0],color='k',alpha=0.2,s=5)
-        axs.scatter(x_vec_animals[line]+1, mat_slopes[line,1],color='k',alpha=0.2,s=5,marker='v')
-    axs.scatter(1, np.nanmean(mat_slopes[:,0]),color='k',s=20)
-    axs.scatter(2, np.nanmean(mat_slopes[:,1]),color='k',s=20, marker='v')
-    axs.set_xlim([0.5,2.5])
-    axs.axhline(0, color='k',lw=2,ls=':')
-    axs.set_ylim([-0.05,0.1])
-    plt.tight_layout()
-    if bool_save: 
-        fig.savefig(os.path.join(PATH_FIGURES,f'{figname}_slopes_ffwd.png'),bbox_inches='tight')
-        fig.savefig(os.path.join(PATH_FIGURES,f'{figname}_slopes_ffwd.svg'),bbox_inches='tight')
     velocity_vector_abs = np.nanmean(tot_input_abs[:,:,2],1)
-    print(velocity_vector_abs.shape, tot_output_abs.shape)
 
     idx_nans_tot = np.where((~np.isnan(velocity_vector)) & (~np.isnan(tot_output_abs[:,2])))[0]
     popt1, _ = curve_fit(exp_func,velocity_vector[idx_nans_tot], tot_output_abs[idx_nans_tot,2], bounds=([0,0,0,0],[10,1,200,1]))
@@ -625,29 +609,6 @@ def plot_feedforward_controller_final(velocity_vector, tot_output_list, tot_anim
         fig.savefig(os.path.join(PATH_FIGURES,f'{figname}_exemplar_duration.png'),bbox_inches='tight')
         fig.savefig(os.path.join(PATH_FIGURES,f'{figname}_exemplar_duration.svg'),bbox_inches='tight')
 
-    fig, axs = plt.subplots(1,1,figsize=(2,3))
-    axs.spines[['top','right']].set_visible(False)
-    axs.scatter(tot_velocity_abs[idx_no_outlier_abs],tot_output_abs_list[idx_no_outlier_abs,2],color='m',s=10, alpha=0.5)
-    axs.set_xlabel('Velocity'), axs.set_ylabel('Step duration')
-    axs.set_ylim([0,0.45]), axs.set_xlim([50,750])
-    axs.plot(xinput, yplot1,'m',lw=3)
-    axs.set_xticks([100,700])
-    plt.tight_layout()
-    if bool_save:
-        fig.savefig(os.path.join(PATH_FIGURES,f'{figname}_exemplar_leg1_duration.png'),bbox_inches='tight')
-        fig.savefig(os.path.join(PATH_FIGURES,f'{figname}_exemplar_leg1_duration.svg'),bbox_inches='tight')
-    
-    fig, axs = plt.subplots(1,1,figsize=(2,3))
-    axs.spines[['top','right']].set_visible(False)
-    axs.scatter(tot_velocity_abs[idx_no_outlier_abs],tot_output_abs_list[idx_no_outlier_abs,5],color='c',s=10, alpha=0.5)
-    axs.set_xlabel('Velocity'), axs.set_ylabel('Step duration')
-    axs.set_ylim([0,0.45]), axs.set_xlim([50,750])
-    axs.set_xticks([100,700])
-    axs.plot(xinput, yplot2,'c',lw=3)
-    plt.tight_layout()
-    if bool_save:
-        fig.savefig(os.path.join(PATH_FIGURES,f'{figname}_exemplar_leg2_duration.png'),bbox_inches='tight')
-        fig.savefig(os.path.join(PATH_FIGURES,f'{figname}_exemplar_leg2_duration.svg'),bbox_inches='tight')
     
 
 
