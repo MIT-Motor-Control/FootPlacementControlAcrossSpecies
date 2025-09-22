@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 from utils.utils_humans import *
 from utils.plot_functions_humans import *
-from utils.test_plots_humans import *
+# from utils.test_plots_humans import *
 warnings.filterwarnings('ignore')
 PATH_CAMARGO_DATASET = os.path.join(os.getcwd(), 'Datasets','Humans','Camargo','processed')
 PATH_CAMARGO_DATASET_TIME = os.path.join(os.getcwd(), 'Datasets','Humans','Camargo','processed_time_bis_250')
@@ -35,7 +35,7 @@ tot_sub1_time, tot_sub2_time = list_sub_time[0], list_sub_time[1]
 ### PART 1 - Velocity dependent ffwd controller ###
 ###################################################
 plot_feedforward_output_humans_time_paper(tot_input_leg1_time, tot_output_leg1_time, tot_sub1_time, bool_plot=False, bool_save=False, bool_fb=False, figname='ffwd_output_h_final_time')
-plot_feedforward_output_humans_paper(tot_input_leg1, tot_output_leg1, tot_sub1, bool_plot=False, bool_save=False, bool_fb=False, figname='ffwd_output_h_final')
+plot_feedforward_output_humans_paper(tot_input_leg1, tot_output_leg1, tot_sub1, bool_plot=True, bool_save=False, bool_fb=False, figname='ffwd_output_h_final')
 plot_feedforward_body_humans_final(tot_input_leg1, tot_sub1, bool_plot=False, bool_save=False, figname='ffwd_body_h_final')
 
 
