@@ -54,7 +54,6 @@ def plot_feedforward_controller_final(velocity_vector, tot_output_list, tot_anim
     str_len_hind = f'{len(np.where(mat_pval[:,1]<0.05)[0])}/{n_animals}'
     str_wid_front = f'{len(np.where(mat_pval[:,2]<0.05)[0])}/{n_animals}'
     str_wid_hind = f'{len(np.where(mat_pval[:,3]<0.05)[0])}/{n_animals}'
-    np.savetxt('AAA_slopes.csv',mat_slopes)
     
     # Stats for the slopes of the mice
     print(np.nanmedian(mat_slopes,0))
@@ -92,7 +91,6 @@ def plot_feedforward_controller_final(velocity_vector, tot_output_list, tot_anim
     x_2 = tot_output_abs_list[idx_no_outlier_abs,2]
     x_3 = tot_output_abs_list[idx_no_outlier_abs,5]
     df = pd.DataFrame({'x':x_1, 'y1':x_2, 'y2':x_3})
-    df.to_csv('aaaaaa.csv')
     axs.plot(xinput, yplot1,'m',lw=3)
     axs.plot(xinput, yplot2,'c',lw=3)
     axs.set_xlabel('Velocity'), axs.set_ylabel('Step duration')
@@ -408,8 +406,6 @@ def plot_correlation_horizon_final(list_input_horizon, tot_animal, bool_plot=Fal
         popt_1_local, _ = scipy.optimize.curve_fit(func, x_data, y_data_1_local, maxfev=5000)
         popt_2_local, _ = scipy.optimize.curve_fit(func, x_data, y_data_2_local, maxfev=5000)
         mat_decays[iter,0], mat_decays[iter,1] = popt_1_local[1], popt_2_local[1]
-    np.save('AAAAAAAAAAAAAAAAAAMICe.npy', mat_decays)
-    print('SAVED ===============')
     print(np.nanmedian(mat_decays,0))
     print(scipy.stats.iqr(mat_decays,0))
     print(np.nanpercentile(mat_decays,[5,95],0))
