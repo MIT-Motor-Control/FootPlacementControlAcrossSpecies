@@ -9,13 +9,12 @@ import matplotlib.pyplot as plt
 
 from utils.utils_humans import *
 from utils.plot_functions_humans import *
-# from utils.test_plots_humans import *
 warnings.filterwarnings('ignore')
 PATH_CAMARGO_DATASET = os.path.join(os.getcwd(), 'Datasets','Humans','Camargo','processed')
 PATH_CAMARGO_DATASET_TIME = os.path.join(os.getcwd(), 'Datasets','Humans','Camargo','processed_time_bis_250')
 
 
-# Loading the datasets 
+# Loading the datasets to extract the body and foot based input/ouput data alongside the subject identifier 
 list_io1, list_io2, list_sub = load_data_camargo()
 tot_input_leg1, tot_self_input_leg1, tot_output_leg1, tot_self_output_leg1 = list_io1[0], list_io1[1], list_io1[2], list_io1[3]
 tot_input_leg2, tot_self_input_leg2, tot_output_leg2, tot_self_output_leg2 = list_io2[0], list_io2[1], list_io2[2], list_io2[3]
@@ -38,16 +37,23 @@ plot_feedforward_output_humans_paper(tot_input_leg1, tot_output_leg1, tot_sub1, 
 ###############################################################
 ### PART 2 - Controller inference on the remaining variance ###
 ###############################################################
-
+# Computing the Rsquare matrix for the body based predictions
 rsquare_foreaft_body,_ = get_rsquare_matrix_camargo(tot_input_leg1_time, tot_output_leg1_time, tot_sub1_time, 0)
 rsquare_lateral_body, gains_matrix = get_rsquare_matrix_camargo(tot_input_leg1_time, tot_output_leg1_time, tot_sub1_time, 1)
-
+# Computing the Rsquares matrix for the foot based predictions
 rsquare_foreaft_self = get_rsquare_self_matrix_baseline(tot_self_input_leg1, tot_output_leg1, tot_sub1, 0)
 rsquare_lateral_self = get_rsquare_self_matrix_baseline(tot_self_input_leg1, tot_output_leg1, tot_sub1, 1)
 
 plot_rsquares_final(rsquare_foreaft_body, rsquare_lateral_body, rsquare_foreaft_self, rsquare_lateral_self, bool_plot=False, bool_save=False, figname='rsquares_final_velocity_250')
 
-# Represent the figure for the control amplitude 
+
+
+
+############################################################
+### PART 3 - Characterization of the feedback controller ###
+############################################################
+
+# Control amplitude
 ind_max = np.zeros((rsquare_foreaft_body.shape[0],2))
 for subject in range(ind_max.shape[0]):
     ind_max[subject,0] = np.max(rsquare_foreaft_body[subject,:] - rsquare_foreaft_self[subject,:])
@@ -62,17 +68,13 @@ for subject in range(21):
 axs.scatter(1,np.nanmean(ind_max[:,1]),color='k',s=20)
 print(np.nanmean(ind_max[:,1]))
 print(np.nanstd(ind_max[:,1]))
+axs.set_ylabel('Control amplitude')
 axs.plot([1,1], [np.nanmean(ind_max[:,1])+np.nanstd(ind_max[:,1]), np.nanmean(ind_max[:,1])-np.nanstd(ind_max[:,1])],color='k',lw=2)
 axs.set_ylim([-0.05,1.05])
 axs.set_xlim([0,4])
 plt.tight_layout()
 
-
-############################################################
-### PART 3 - Characterization of the feedback controller ###
-############################################################
-
-# Correlation between successive contacts 
+# Control timescale 
 list_input_time, list_subjects = [],[]
 list_input_fr, list_output_fr = [], []
 list_input_time.append(list_io1[1]), list_subjects.append(list_sub[0])
