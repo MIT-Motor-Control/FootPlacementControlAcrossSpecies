@@ -1,5 +1,16 @@
 # FootPlacementControlAcrossSpecies
-Support code for the paper "Foot placement control underlies stable locomotion across species", De Comite and Seethapathi, PNAS, 2025
+Foot placement control underlies stable locomotion across species, Antoine De Comite and Nidhi Seethapathi, PNAS, 122 (43), 2025
+
+This repository contains the code associated with the above manuscript.
+
+---
+## Data processing 
+
+---
+
+## Data analysis
+
+---
 
 
 ## Citation
