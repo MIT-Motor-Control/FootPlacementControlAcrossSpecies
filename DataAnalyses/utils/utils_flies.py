@@ -11,8 +11,15 @@ from tqdm import tqdm
 
 
 def compute_velocity_com(com_pos_x):
-    """Computes the velocity of the com based on the 4th order centered finite difference scheme"""
-    dt = 1/150
+    """
+    Computes the velocity of the com based on the 4th order centered finite difference scheme
+
+    INPUT
+        - com_pos_x : position of the center of mass along the foreaft axis
+    OUTPUT
+        - output_velocity : speed of the center of mass along the foreaft axis
+    """
+    dt = 1/150 # Replace that quantity based on your framerate (here 150 Hz)
     output_velocity = np.zeros((com_pos_x.shape[0],))
     output_velocity[2:-2] = (-com_pos_x[4:]+8*com_pos_x[3:-1]-8*com_pos_x[1:-3]+com_pos_x[:-4])/(12*dt)
     return output_velocity
@@ -20,7 +27,11 @@ def compute_velocity_com(com_pos_x):
 
 def load_video_data_mm():
     """
-    Load the video related input data
+    Load the data to identify individual video
+
+    OUTPUT
+        - video_matrix_diag : identifies video for front-right based gait cycles
+        - video_matrix_odiag : identifies video for front-left based gait cycles
     """
     path_loading = os.path.join(os.getcwd(), 'Datasets','Fly','controllers_io')
     video_matrix_diag = np.load(os.path.join(path_loading,'video_id_diag_mm_fixed.npy'))
@@ -30,9 +41,15 @@ def load_video_data_mm():
 
 def load_all_data_horizon(horizon):
     """
-    Load the input data for the fly controller inference (with horizon)
+    Load the input data for the fly controller inference for a specific horizon
     
     Returns two lists which respectively contain the data for body and self prediction
+
+    INPUTS 
+        - horizon is the number of gait cycle for that specific data loading
+    OUTPUTS
+        - list_one : contains the body based data
+        - list_two : contains the foot based data
     """
     path_loading = os.path.join(os.getcwd(), 'Datasets','Fly','controllers_io')
     with open(os.path.join(path_loading,f'list_input_fr_{horizon}.pkl'),'rb') as f1:
@@ -62,6 +79,10 @@ def load_all_data_mm():
     Load the input data for the fly controller inference 
     
     Returns two lists which respectively contain the data for body and self prediction
+
+    OUTPUTS
+        - list_one : contains the body based data
+        - list_two : contains the foot based data
     """
     path_loading = os.path.join(os.getcwd(),'Datasets','Fly','controllers_io')
     with open(os.path.join(path_loading,'list_input_fr_mm_fixed.pkl'),'rb') as f1:
@@ -89,7 +110,16 @@ def load_all_data_mm():
 
 def concatenate_data(input_list, output_list, input_list_self, output_list_self):
     """
-    Concatenate the (off) diagonal data
+    Concatenate the data of individual individual bouts
+    
+    INPUTS
+        - input_list : contains the body based input data
+        - output_list : contains the body based output data
+        - input_self : contains the foot based input data
+        - output_self : contains the foot based output data
+
+    OUTPUTS
+        Same as inputs but concatenated in a numpy array
     """
     input_list_matrix, output_list_matrix = input_list[0], output_list[0]
     input_self_matrix, output_self_matrix = input_list_self[0], output_list_self[0]
@@ -103,6 +133,15 @@ def concatenate_data(input_list, output_list, input_list_self, output_list_self)
 def flip_data(input_list, input_self, output_list, output_self):
     """
     Flip the data that goes in the other diretion (negative head velocity along the x-axis)
+
+    INPUTS
+        - input_list : contains the body based input data
+        - output_list : contains the body based output data
+        - input_self : contains the foot based input data
+        - output_self : contains the foot based output data
+
+    OUTPUTS
+        Same as inputs but all direction are aligned
     """
     idx_flip = np.where(np.nanmean(input_list[:,:,2],1)<0)[0]
     input_list_flip, output_list_flip = copy.deepcopy(input_list), copy.deepcopy(output_list)
@@ -119,7 +158,20 @@ def flip_data(input_list, input_self, output_list, output_self):
 
 
 def regression_fr_laterality_velidp(tot_input, tot_output, tot_video, id_leg):
-    """Computes the lateral regression coefficient for the fly data - velocity independant"""
+    """
+    Computes the lateral regression coefficient for the fly data (ie medial and lateral directions)
+
+    INPUTS
+        - tot_input : contains the body based input to foot placement controller
+        - tot_output : contains the body based output to foot placement controller
+        - tot_video : contains the video identifier
+        - id_leg : leg identifier whether you want to analyze the first (0), second (1), or third (2) leg of the group
+
+    OUTPUTS
+        - regression_matrix_small : contains the model information for medial direction
+        - regression_matrix_large : contains the model information for lateral direction
+
+    """
     n_videos = len(set(tot_video[~np.isnan(tot_video)]))
     regression_matrix_small = np.zeros((n_videos,21,3,4,5))
     regression_matrix_large = np.zeros((n_videos,21,3,4,5))
@@ -168,7 +220,18 @@ def regression_fr_laterality_velidp(tot_input, tot_output, tot_video, id_leg):
 
 def get_rsquare_matrix_normalization(tot_input, tot_output, tot_video, id_leg, bool_lat):
     """
-    Computes the rsquare by integrating the feedforward model
+    Computes the rsquare matrix for the body based model (as deviations from the nominal behavior)
+
+    INPUTS
+     - tot_input : contains the body based input to foot placement controller
+     - tot_output : contains the body based output to foot placement controller
+     - tot_video : contains the video identifier
+     - id_leg : leg identifier whether you want to analyze the first (0), second (1), or third (2) leg of the group
+     - bool_lat : (0) for foreaft, (1) for lateral
+
+     OUTPUTS
+     - rsquare_diagonal : n_animal  x n_timestep matrix containing the individual rsquares 
+     - gains_diagonal : n_animal x n_timestep x n_input x n_output contiaining the individual gains of the multilinear regression
     """
     n_videos = len(set(tot_video[~np.isnan(tot_video)]))
     rsquare_diagonal = np.zeros((n_videos, tot_input.shape[1]))
@@ -219,7 +282,19 @@ def get_rsquare_matrix_normalization(tot_input, tot_output, tot_video, id_leg, b
 
 
 def get_rsquare_matrix(tot_input, tot_output, tot_video, id_leg, bool_lat):
-    """Computes the rsquare based on the multilinear regression"""
+    """
+    Computes the rsquare matrix for the foot based model 
+
+    INPUTS
+     - tot_input : contains the foot based input to foot placement controller
+     - tot_output : contains the foot based output to foot placement controller
+     - tot_video : contains the video identifier
+     - id_leg : leg identifier whether you want to analyze the first (0), second (1), or third (2) leg of the group
+     - bool_lat : (0) for foreaft, (1) for lateral
+
+     OUTPUTS
+     - rsquare_diagonal : n_animal  x n_timestep matrix containing the individual rsquares 
+    """
     n_videos = len(set(tot_video[~np.isnan(tot_video)]))
     rsquare_diagonal = np.zeros((n_videos,tot_input.shape[1]))
     for video in range(1,9):
@@ -235,30 +310,39 @@ def get_rsquare_matrix(tot_input, tot_output, tot_video, id_leg, bool_lat):
             else:
                 a,b = multilinear_ols_rsquare_gains(design_mat, pred_value)
                 pred_local = b @ design_mat.T
-                # if time == 100:
-                #     fig, axs = plt.subplots(1,1,figsize=(3,3))
-                #     axs.spines[['top','right']].set_visible(False)
-                #     axs.scatter(pred_value,pred_local,color='r',s=20,alpha=0.5)
-                #     axs.set_xlim([-0.06,0.06]), axs.set_ylim([-0.06,0.06])
-                #     axs.plot([-0.05,0.05],[-0.05,0.05],color='k',lw=2,ls=':')
-                #     axs.set_xlabel('True deviation'), axs.set_ylabel('Predicted deviation')
-                #     plt.tight_layout()
-                #     fig.savefig(os.path.join(os.getcwd(),'fly_results','figures','scatter_baseline.png'),bbox_inches='tight')
-                #     fig.savefig(os.path.join(os.getcwd(),'fly_results','figures','scatter_baseline.svg'),bbox_inches='tight')
-                #     plt.show()
                 rsquare_diagonal[video-1, time] = multilinear_ols_rsquare(design_mat, pred_value)
 
     return rsquare_diagonal
 
 
 def multilinear_ols_rsquare(X,y):
+    """
+    Computes the rsquare matrix for a given input/output relationship
+    
+    INPUTS
+     - X : input matrix of the predictors 
+     - y : output matrix of the predicted variable
+     
+    OUTPUT
+     - rsquare : rsquare matrix for the input/output couple
+     """
     theta_hat = np.linalg.inv(X.T @ X) @ X.T @ y
     yhat = X @ theta_hat
     rsquare = 1 - np.sum(np.square(yhat-y)) / np.sum(np.square(y))
     return rsquare
 
 def multilinear_ols_rsquare_gains(X,y):
-    """Returns the optimal gains and te associated r-squares for the multilinear regression between X and y"""
+    """
+    Computes the rsquare matrix for a given input/output relationship
+    
+    INPUTS
+     - X : input matrix of the predictors 
+     - y : output matrix of the predicted variable
+     
+    OUTPUT
+     - rsquare : rsquare matrix for the input/output couple
+     - theta_hat : coefficients of the multilinear relationship
+     """
     theta_hat = np.linalg.inv(X.T@X) @(X.T@y)
     yhat = X @ theta_hat
     rsquare = 1 - np.sum(np.square(yhat-y)) / np.sum(np.square(y))
