@@ -6,6 +6,13 @@ This repository contains the code associated with the above manuscript.
 ---
 ## Data processing 
 
+The foot placement control pipeline used in the manuscript are useable for any legged agent (artificial or biological) independently of the agent's dimension and experimental procedure used for the data collection. The only conditions on the data are the following 
+
+- The horizontal positions (i.e., parallel to the agent's transverse plane) of the extremity of each limb should be availalbe throughoug the trial.  
+- The horizontal position of at least one point of the body (not located on one of the legs used above) should be available throughout the trial.
+- The kinematic data has been collected at a high enough framerate (ideally a temporal resolution of at least 10 frames per gait cycles)
+
+
 ---
 
 ## Data analysis
