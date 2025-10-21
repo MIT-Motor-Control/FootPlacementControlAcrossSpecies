@@ -1,5 +1,5 @@
 # FootPlacementControlAcrossSpecies
-Foot placement control underlies stable locomotion across species, Antoine De Comite and Nidhi Seethapathi, PNAS, 122 (43), 2025
+Foot placement control underlies stable locomotion across species, Antoine De Comite and Nidhi Seethapathi, PNAS, 122 (43), 2025 , (https://doi.org/10.1073/pnas.2413958122)
 
 This repository contains the code associated with the above manuscript.
 
