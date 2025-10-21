@@ -50,6 +50,8 @@ At the end of the data processing procedure, the input and output data of the fo
 
 ## Data analysis
 
+The data analysis is less agent-specific than the processing part. The code contained in the `DataAnalysis` section contains the code that were used to generate the results from the paper and can be minimally adapt to be working with your own data. The rsquare matrices spitted out by the different functions contains one raw per subject / animal and one column by interpolated time points. The options of the function call have to be adjusted to investigated specific outputs (see function documentation).
+
 ---
 
 
