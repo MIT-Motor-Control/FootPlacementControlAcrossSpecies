@@ -211,7 +211,7 @@ def plot_laterality_regression(regression_small, regression_large, bool_plot=Fal
     # Plots the feedback gains at contralateral midstance
     fig, axs = plt.subplots(1,1,figsize=(3,3))
     axs.spines[['top','right']].set_visible(False)
-
+    axs.set_xlabel('Direction'), axs.set_ylabel('Gain')
     axs.scatter(1, np.nanmean(regression_small[:,75,1,1,0]),color='r',s=20)
     axs.scatter(2, np.nanmean(regression_large[:,75,1,1,0]),color='b',s=20)
     axs.plot([1,1], [np.nanmean(regression_small[:,75,1,1,0])+scipy.stats.iqr(regression_small[:,75,1,1,0],nan_policy='omit')/2,np.nanmean(regression_small[:,75,1,1,0])-scipy.stats.iqr(regression_small[:,75,1,1,0],nan_policy='omit')/2],color='r',lw=2)
@@ -260,6 +260,7 @@ def plot_correlation_horizon_final(list_input_horizon, list_subjects, bool_plot=
         axs.plot([horizon+1, horizon+1], [np.nanmean(matrix_slope[:,horizon],0)+scipy.stats.iqr(matrix_slope[:,horizon],0,nan_policy='omit')/2, np.nanmean(matrix_slope[:,horizon],0)-scipy.stats.iqr(matrix_slope[:,horizon],0,nan_policy='omit')/2],color='k',lw=2)
     axs.set_ylim([-1.05,1.05])
     axs.axhline(0,color='k',ls=':',lw=2)
+    axs.set_xlabel('Number of gait cycle'), axs.set_ylabel('Pearson coefficient')
     plt.tight_layout()
 
     if bool_save:
@@ -286,6 +287,7 @@ def plot_rsquares_final(foreaft_body, lateral_body, foreaft_self, lateral_self, 
     axs.set_yticks([0,0.25,0.5,0.75,1])
     axs.set_xticks([0,25,50,75,100])
     axs.set_xticklabels(['-1','-0.75','-0.5','-0.25','0'])
+    axs.set_xlabel('Relative gait fraction'), axs.set_ylabel('Explained variance')
     plt.tight_layout()
     if bool_save:
         fig.savefig(os.path.join(PATH_FIGURES,f'{figname}_foreaft.png'),bbox_inches='tight')
@@ -308,6 +310,7 @@ def plot_rsquares_final(foreaft_body, lateral_body, foreaft_self, lateral_self, 
     axs.set_yticks([0,0.25,0.5,0.75,1])
     axs.set_xticks([0,25,50,75,100])
     axs.set_xticklabels(['-1','-0.75','-0.5','-0.25','0'])
+    axs.set_xlabel('Relative gait fraction'), axs.set_ylabel('Explained variance')
     plt.tight_layout()
     if bool_save:
         fig.savefig(os.path.join(PATH_FIGURES,f'{figname}_lateral.png'),bbox_inches='tight')

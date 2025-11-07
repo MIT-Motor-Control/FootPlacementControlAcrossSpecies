@@ -25,6 +25,7 @@ def plot_rsquares_final(list_body, list_self, bool_plot=False, bool_save=False, 
     axs.fill_between(np.arange(21), np.nanmedian(list_body[0],0)+scipy.stats.iqr(list_body[0],0,nan_policy='omit')/2, np.nanmedian(list_body[0],0)-scipy.stats.iqr(list_body[0],0,nan_policy='omit')/2, color='b', alpha=0.5)
     axs.fill_between(np.arange(21), np.nanmedian(list_self[0],0)+scipy.stats.iqr(list_self[0],0,nan_policy='omit')/2, np.nanmedian(list_self[0],0)-scipy.stats.iqr(list_self[0],0,nan_policy='omit')/2, color='r', alpha=0.5)
     axs.set_ylim([-0.05,1.05])
+    axs.set_xlabel('Relative gait fraction'), axs.set_ylabel('Explained variance')
     plt.tight_layout()
     if bool_save:
         fig.savefig(os.path.join(OUTPUT_FIGURES,f'{figname}_front_foreaft.png'),bbox_inches='tight')
@@ -45,6 +46,7 @@ def plot_rsquares_final(list_body, list_self, bool_plot=False, bool_save=False, 
     axs.set_ylim([-0.05,1.05])
     axs.set_xticks([0,5,10,15,20])
     axs.set_xticklabels(['-1','-0.75','-0.5','-0.25','0'])
+    axs.set_xlabel('Relative gait fraction'), axs.set_ylabel('Explained variance')
     plt.tight_layout()
     if bool_save:
         fig.savefig(os.path.join(OUTPUT_FIGURES,f'{figname}_front_lateral.png'),bbox_inches='tight')
@@ -65,6 +67,7 @@ def plot_rsquares_final(list_body, list_self, bool_plot=False, bool_save=False, 
     axs.set_ylim([-0.05,1.05])
     axs.set_xticks([0,5,10,15,20])
     axs.set_xticklabels(['-1','-0.75','-0.5','-0.25','0'])
+    axs.set_xlabel('Relative gait fraction'), axs.set_ylabel('Explained variance')
     plt.tight_layout()
     if bool_save:
         fig.savefig(os.path.join(OUTPUT_FIGURES,f'{figname}_center_foreaft.png'),bbox_inches='tight')
@@ -85,6 +88,7 @@ def plot_rsquares_final(list_body, list_self, bool_plot=False, bool_save=False, 
     axs.set_ylim([-0.05,1.05])
     axs.set_xticks([0,5,10,15,20])
     axs.set_xticklabels(['-1','-0.75','-0.5','-0.25','0'])
+    axs.set_xlabel('Relative gait fraction'), axs.set_ylabel('Explained variance')
     plt.tight_layout()
     if bool_save:
         fig.savefig(os.path.join(OUTPUT_FIGURES,f'{figname}_center_lateral.png'),bbox_inches='tight')
@@ -105,6 +109,7 @@ def plot_rsquares_final(list_body, list_self, bool_plot=False, bool_save=False, 
     axs.set_ylim([-0.05,1.05])
     axs.set_xticks([0,5,10,15,20])
     axs.set_xticklabels(['-1','-0.75','-0.5','-0.25','0'])
+    axs.set_xlabel('Relative gait fraction'), axs.set_ylabel('Explained variance')
     plt.tight_layout()
     if bool_save:
         fig.savefig(os.path.join(OUTPUT_FIGURES,f'{figname}_hind_foreaft.png'),bbox_inches='tight')
@@ -125,6 +130,7 @@ def plot_rsquares_final(list_body, list_self, bool_plot=False, bool_save=False, 
     axs.set_ylim([-0.05,1.05])
     axs.set_xticks([0,5,10,15,20])
     axs.set_xticklabels(['-1','-0.75','-0.5','-0.25','0'])
+    axs.set_xlabel('Relative gait fraction'), axs.set_ylabel('Explained variance')
     plt.tight_layout()
     if bool_save:
         fig.savefig(os.path.join(OUTPUT_FIGURES,f'{figname}_hind_lateral.png'),bbox_inches='tight')
@@ -135,14 +141,6 @@ def plot_rsquares_final(list_body, list_self, bool_plot=False, bool_save=False, 
         idx_stats_nan = np.where((~np.isnan(list_body[5][:,time])) & (~np.isnan(list_self[5][:,time])))[0]
         stat_test = scipy.stats.wilcoxon(list_body[5][idx_stats_nan,time], list_self[5][idx_stats_nan,time], alternative='greater')
         list_pvalue_32.append(stat_test.pvalue)
-    """
-    print(np.array(list_pvalue_11))
-    print(np.array(list_pvalue_12))
-    print(np.array(list_pvalue_21))
-    print(np.array(list_pvalue_22))
-    print(np.array(list_pvalue_31))
-    print(np.array(list_pvalue_32))
-    """
     if bool_plot:
         plt.show()
 
@@ -228,9 +226,6 @@ def plot_laterality_regression(regression_small, regression_large, bool_plot=Fal
     std_tot = np.nanstd(np.concatenate((regression_large[:,15,1,1,0],regression_small[:,15,1,1,0]),0))
     print('Cohen d', (mean_1-mean_2)/(std_tot))
 
-    print(test1)
-    print(test_ttest)
-
     if bool_plot:
         plt.show()
 
@@ -242,7 +237,6 @@ def plot_successive_contacts_fly(input_list, video_list, bool_plot=False, bool_s
 
     n_videos = int(np.max(video_list))
     n_horizons = len(input_list)
-    print(n_horizons)
     corr_matrix = np.zeros((n_videos, n_horizons,3))
     slope_matrix = np.zeros((n_videos, n_horizons,3))
     for vid in range(1,n_videos+1):
@@ -273,6 +267,9 @@ def plot_successive_contacts_fly(input_list, video_list, bool_plot=False, bool_s
         fig.savefig(os.path.join(OUTPUT_FIGURES,f'{figname}_rvalue.png'),bbox_inches='tight')
 
     def func(x,a,b,c):
+        """
+        function called by the curvefit for exponential fit 
+        """
         return a*np.exp(-b*x)+c
 
     x_data = np.arange(1,6)-1
@@ -296,21 +293,12 @@ def plot_successive_contacts_fly(input_list, video_list, bool_plot=False, bool_s
         popt_3_local, _ = scipy.optimize.curve_fit(func, x_data, y_data_3_local, maxfev=5000)
         mat_decays[iter,0], mat_decays[iter,1], mat_decays[iter,2] = popt_1_local[1], popt_2_local[1], popt_3_local[1]
 
-    print(np.nanmedian(mat_decays,0))
-    print(np.nanpercentile(mat_decays,[5,95],0))
-    print(scipy.stats.iqr(mat_decays,0))
-
 
     fig, axs = plt.subplots(1,1,figsize=(3,3))
     axs.spines[['top','right']].set_visible(False)
     tmp = 1/mat_decays
     axs.scatter([1,2,3],np.nanmedian(tmp,0),color='k',s=20)
-    print('Parameters to put in the paper')
-    print(np.nanmedian(tmp,0))
-    print(scipy.stats.iqr(tmp,0,nan_policy='omit'))
     axs.set_xlim([-0.5,3.5]), axs.set_ylim([-0.5,2.5])
-    #axs.plot([1,1],[np.nanmedian(tmp[:,0])+scipy.stats.iqr(tmp[:,0],nan_policy='omit')/2,np.nanmedian(tmp[:,0])-scipy.stats.iqr(tmp[:,0],nan_policy='omit')/2],color='k',lw=2)
-    #axs.plot([2,2],[np.nanmedian(tmp[:,1])+scipy.stats.iqr(tmp[:,1],nan_policy='omit')/2,np.nanmedian(tmp[:,1])-scipy.stats.iqr(tmp[:,1],nan_policy='omit')/2],color='k',lw=2)
     axs.plot([3,3],[np.nanmedian(tmp[:,2])+scipy.stats.iqr(tmp[:,2],nan_policy='omit')/2,np.nanmedian(tmp[:,2])-scipy.stats.iqr(tmp[:,2],nan_policy='omit')/2],color='k',lw=2)
     plt.tight_layout()
     
@@ -510,5 +498,6 @@ def plot_feedforward_controller_final(input_list, output_list, video_list, bool_
     if bool_save:
         fig.savefig(os.path.join(OUTPUT_FIGURES,f'{figname}.png'),bbox_inches='tight')
         fig.savefig(os.path.join(OUTPUT_FIGURES,f'{figname}.svg'),bbox_inches='tight')
+
     if bool_plot:
         plt.show()
